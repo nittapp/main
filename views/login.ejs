@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<!-- Bootstrap core CSS -->
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Material Design Bootstrap -->
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.5/css/mdb.min.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  </head>
+  <body>
+  <div class="page-header">NITT App</div>
+  <div class="container" style="position: absolute; top: 50%; left: 49%; transform: translate(-50%,-50%)">
+    <div class="row justify-content-md-center">
+	<!-- Material form login -->
+	<form class="col-sm-12 col-md-8 col-lg-6" action="/login" method="post">
+		<p class="h4 text-center mb-4">Sign in</p>
+
+		<!-- Material input email -->
+		<div class="md-form">
+            <i class="material-icons prefix">account_box</i>
+			<input type="text" name="email" class="form-control">
+			<label for="email">Roll Number or Username</label>
+		</div>
+
+		<!-- Material input password -->
+		<div class="md-form">
+			<i class="material-icons prefix">lock</i>
+			<input type="password" name="password" class="form-control">
+			<label for="password">OCTA or Webmail password</label>
+		</div>
+
+		<div class="text-center mt-4">
+            <% if (locals.message) { %>
+                <div class="alert alert-danger"><%= message%></div>
+            <% } %>
+			<button class="btn btn-primary" type="submit">Login</button>
+		</div>
+	</form>
+    </div>
+	<!-- Material form login -->
+                      
+	<!-- JQuery -->
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.13.0/umd/popper.min.js"></script>
+
+	<!-- Bootstrap core JavaScript -->
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.min.js"></script>
+	<!-- MDB core JavaScript -->
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.5/js/mdb.js"></script>
+
+  </body>
+</html>

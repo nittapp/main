@@ -1,0 +1,7 @@
+module.exports = {
+  db: "mongodb://localhost/nittapp",
+  ldap: {
+    username: "106114013",
+    password: "gabyasatrd",
+  },
+};
