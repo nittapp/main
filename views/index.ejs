@@ -21,35 +21,8 @@
     <a href="/logout" style="float: right; font-weight: bold; margin-top: -5px; color: white; padding-right: 5px"><i class="material-icons">power_settings_new</i></a>
   </div>
 
-  <div class="container">
-  <div class="row justify-content-md-center" id="main_card_container" style="margin-top: 50px">
-    <!--Card-->
-    <a href="#" class="card col-lg-3 col-md-4 col-sm-5">
-        <div class="view overlay">
-			<i class="material-icons">event</i>
-            <h4 class="card-title">Events Calender</h4>
-        </div>
-    </a>
-
-    <a href="#" class="card col-lg-3 col-md-4 col-sm-5">
-        <div class="view overlay">
-			<i class="material-icons">assignment_late</i>
-            <h4 class="card-title">Complaints Portal</h4>
-        </div>
-    </a>
-    <a href="#" class="card col-lg-3 col-md-4 col-sm-5">
-        <div class="view overlay">
-			<i class="material-icons">local_dining</i>
-            <h4 class="card-title">Mess</h4>
-        </div>
-    </a>
-    <a href="#" class="card col-lg-3 col-md-4 col-sm-5">
-        <div class="view overlay">
-			<i class="material-icons">info</i>
-            <h4 class="card-title">Notifications</h4>
-        </div>
-    </a>
-    <!--Card-->
+  <div id="my_iframe_container">
+      <iframe src="/navboard" id="my_iframe"></iframe>
   </div>
 </div>
 	<!-- Material form login -->
@@ -64,5 +37,41 @@
 	<!-- MDB core JavaScript -->
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.5/js/mdb.js"></script>
 
+    <script type="text/javascript">
+        var reverse_ports_map = {
+            "/events": 2000,
+            "/complaints": 3000, 
+            "/mess": 4000,
+            "/notifications": 5000,
+        }
+
+        var currentUrl = "//" + location.host + "/navboard";
+        function goto(url, title) {
+            var pathname = url.replace(/http:\/\/[^\/]+\//, "/");
+            if (pathname == "/navboard") pathname = "/";
+            history.pushState({
+                prevSrc: currentUrl,
+              },
+              title + " | NITT App",
+              pathname
+           );
+           currentUrl = url;
+        }
+
+        window.onmessage = function(msg) {
+            console.log(msg.data, arguments);
+            try {
+              var iframeLoc = msg.data.loaded;
+              goto(iframeLoc, iframeLoc);
+            } catch(e) {
+              alert("error!"); console.log(e);
+            }
+        };
+
+        window.onpopstate = function(prevState) {
+            alert("hi");
+            goto(prevState.prevSrc, "NITT App");
+        };
+    </script>
   </body>
 </html>

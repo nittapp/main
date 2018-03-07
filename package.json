@@ -14,9 +14,7 @@
     "ejs": "^2.5.7",
     "express": "~4.12.4",
     "express-session": "^1.15.6",
-    "imap": "^0.8.19",
-    "jade": "~1.9.2",
-    "ldapjs": "^1.0.2",
+    "http-proxy": "^1.16.2",
     "mongoose": "^5.0.7",
     "morgan": "~1.5.3",
     "serve-favicon": "~2.2.1"

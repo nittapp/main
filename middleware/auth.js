@@ -1,10 +1,5 @@
-var Imap = require('imap');
-var ldap = require('ldapjs');
-
-var ldapurl = 'ldap://10.0.0.39:389';
-var imaphost = "10.0.0.173";
-var imapport = 143;
-var domain = 'octa.edu';
+var fs = require('fs');
+var https = require('https');
 
 var ensureLoggedIn = function(req, res, next) {
   if (!req.session.isLoggedIn) {
@@ -13,91 +8,50 @@ var ensureLoggedIn = function(req, res, next) {
   next();
 }
 
-var getUserInfo = function(username, callback){
-  var client = ldap.createClient({
-    url: ldapurl
-  });
-  var server ="106114062";
-  var password = "Octa4062";
-  var cn = server+'@'+domain;
-  client.bind(cn,password,function(err){ console.log(err); });
-
-  if(/^\d{9}/.test(username) == false) return callback(new Error("Invalid roll number"));
-  var opts = {
-    scope: 'sub',
-    filter: "(cn=" + username + ")",
-  };
-  var DN = "dc=octa,dc=edu";
-  client.search(DN, opts, function(err, res) {
-    if (err){
-      callback(err);
-    }else{
-      res.on('searchEntry', function(entry) {
-        var ret = Object.assign({}, entry.object);
-        ret.department = entry.object.dn.match(/OU=([^,]+),DC=octa/)[1];
-        callback(null,ret);
-        client.unbind(function (err) {});
-      });
-      res.on('error', function(err) {
-        console.error('error: ' + err.message);
-        client.unbind(function (err) {});
-      });
-    }
-  });
+var authProxyRequestOptions = {
+  hostname: "delta.nitt.edu",
+  port: 3142,
+  path: '/',
+  method: 'POST',
+  key: fs.readFileSync('./client1-key.pem'),
+  cert: fs.readFileSync('./client1-crt.pem'),
+  ca: fs.readFileSync('./ca-crt.pem'),
+  rejectUnauthorized: false,
+  requestCert: true,
 };
+authProxyRequestOptions.agent = new https.Agent(authProxyRequestOptions);
 
 var authenticate=function(username, password, callback){
   if(!password) return callback(new Error("Password required"));
-  var client = ldap.createClient({
-    url: ldapurl
+
+  var req = https.request(authProxyRequestOptions, function(res) {
+    res.setEncoding('utf8');
+    var body = '';
+    res.on('data', (chunk) => {
+      body += chunk;
+    });
+    res.on('end', () => {
+      try {
+        body = JSON.parse(body);
+        callback(null, body);
+      } catch (e) {
+        console.log(e);
+        callback(e, null);
+      }
+    });
+  });
+ 
+  req.on('error', function(e) {
+    console.log(e);
+    callback(new Error("Unable to authenticate right now. Please try again in some time"));
   });
 
-  console.log("Trying ldap login");
-  var cn = username+'@'+domain;
-  client.bind(cn,password,function(err){
-    console.log("hi");
-    if (err){
-      console.log(err);
-      console.log("Trying Imap Login");
-      var imap = new Imap({
-        user: username,
-        password: password,
-        host: imaphost,
-        port: imapport,
-        tls: false
-      });
-      imap.once('ready', function() {
-        imap.end();
-        console.log("Authenticated");
-        getUserInfo(username, callback);
-      });
-      imap.once('error', function(err) {
-        console.log(err);
-        callback(err);
-      });
-      imap.connect();
-    }else{
-      client.unbind(function (err) {});
-      console.log("Authenticated");
-      getUserInfo(username, callback);
-    }
-  });
-};
-
-var initalPage = function (req, res, next) {
-  var init={};
-  init.rollNumber = req.session.rollNumber;
-  init.name = req.session.name;
-  res.render('index', { init: init, title:"The NITT App" });
-};
-
-var logout = function(req, res, next){
-  req.session.destroy();
-  res.redirect('/');
+  var body = JSON.stringify({ username: username, password: password });
+  req.setHeader('Content-Type', 'applicatin/json');
+  req.setHeader('Content-Length', body.length);
+  req.write(body);
+  req.end();
 };
 
 module.exports.ensureLoggedIn = ensureLoggedIn;
 module.exports.authenticate = authenticate;
-module.exports.processLogin = processLogin;
-module.exports.initalPage = initalPage;
-module.exports.logout = logout;

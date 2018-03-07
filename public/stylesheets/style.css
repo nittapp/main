@@ -60,3 +60,17 @@ a {
     width: 41.667% !important;
   }
 }
+
+#my_iframe_container {
+  position: absolute;
+  top: 45px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+#my_iframe {
+  width: 100%;
+  height: 99%;
+  border: none;
+}

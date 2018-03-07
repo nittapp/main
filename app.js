@@ -6,13 +6,13 @@ var cookieParser = require('cookie-parser');
 var session = require("express-session");
 var bodyParser = require('body-parser');
 var auth = require("./middleware/auth");
-var globalConfig = require("./config");
+var config = require("./config");
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
 var mongoose = require('mongoose');
 var MongoStore = require('connect-mongo')(session);
-mongoose.connect(globalConfig.db);
+mongoose.connect(config.db);
 
 var app = express();
 app.enable("trust proxy");
@@ -36,14 +36,36 @@ app.use(session({
   saveUninitialized: true
 }));
 
+app.use(function(req, res, next) {
+  console.log("got req for ", req.path, req.__container__);
+  next();
+});
+
+app.use(function(req, res, next) {
+  var oldsend = res.send.bind(res);
+  res.send = function(statusOrData, data) {
+    if (typeof data != 'string') {
+      data = statusOrData;
+    }
+
+    if (res.get('Content-Type') == 'text/html' || typeof data == 'string') {
+      var n = data.lastIndexOf("</body>");
+      if (n >= 0) {
+        var prefix = data.substr(0, n);
+        var hack = "<script type='text/javascript' src='/javascripts/iframe_hack.js'></script></body>";
+        data = prefix + hack + data.substr(n + 8);
+      }
+    }
+    oldsend(data);
+  };
+  next();
+});
 
 app.use('/', routes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+  res.render('index', {});
 });
 
 // error handlers
@@ -70,5 +92,5 @@ app.use(function(err, req, res, next) {
   });
 });
 
-
 module.exports = app;
+

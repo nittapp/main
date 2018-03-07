@@ -1,0 +1,6 @@
+[submodule "Events-Calendar"]
+	path = Events-Calendar
+	url = git@github.com:nittapp/Events-Calendar
+[submodule "admin-notifications"]
+	path = admin-notifications
+	url = git@github.com:nittapp/admin-notifications
