@@ -4,3 +4,6 @@
 [submodule "admin-notifications"]
 	path = admin-notifications
 	url = git@github.com:nittapp/admin-notifications
+[submodule "NITTComplaintPortal"]
+	path = NITTComplaintPortal
+	url = git@github.com:nittapp/NITTComplaintPortal
