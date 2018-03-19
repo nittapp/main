@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head><title>Transport Schedule</title></head>
+<style>
+  table {
+    border: 1px solid black;
+    width: 95%;
+    margin: 0 auto;
+  }
+  td:first {
+    width: 70%;
+  }
+  .visited {
+    background: red;
+  }
+  .first-unvisited {
+    background: green;
+  }
+  .unvisited {
+    background: lightgreen;
+  }
+</style>
+<body>
+
+<div id="navbar">
+  <a id="nextTrip">Next Trip</a>
+  <a id="allTrips">All Trips</a>
+</div>
+
+<div id="container">
+
+</div>
+  
+<script type="text/javascript">
+var routes = [
+  {
+    "name": "Battery Car Route 1",
+    "places": [ "Admin Block", "Opal", "Beryl", "Workshop", "LHC", "Orion Back/Archi", "Ojas" ],
+    "slots": [
+      ['08:07AM', '08:12AM', '08:16AM', '08:19AM', '08:22AM', '08:25AM', '08:28AM'],
+      ['08:57AM', '09:02AM', '09:06AM', '09:09AM', '09:12AM', '09:15AM', '09:18AM'],
+      ['10:07AM', '10:12AM', '10:16AM', '10:19AM', '10:22AM', '10:25AM', '10:28AM'],
+      ['10:57AM', '11:02AM', '11:06AM', '11:09AM', '11:12AM', '11:15AM', '11:18AM'],
+      ['12:05PM', '12:26PM', '12:22PM', '12:19PM', '12:16PM', '12:13PM', '12:10PM'],
+      ['01:07PM', '01:12PM', '01:16PM', '01:19PM', '01:22PM', '01:25PM', '01:28PM'],
+      ['02:15PM', '02:20PM', '02:24PM', '02:27PM', '02:30PM', '02:33PM', '02:36PM'],
+    ]
+  },
+  {
+    "name": "Battery Car Route 1 (Evng)",
+    "places": [ 'LH', 'Admin', 'NSO', 'Library', 'Opal', 'Shopping Complex', 'Silver Jubilee' ],
+    "slots": [
+      ['05:30PM', '05:32PM', '05:34PM', '05:36PM', '05:39PM', '05:42PM', '05:45PM'],
+      ['06:05PM', '06:07PM', '06:09PM', '06:11PM', '06:14PM', '06:17PM', '06:20PM'],
+      ['06:35PM', '06:37PM', '06:39PM', '06:41PM', '06:44PM', '06:47PM', '06:50PM'],
+      ['06:55PM', '06:57PM', '06:59PM', '07:01PM', '07:04PM', '07:07PM', '07:10PM'],
+      ['07:35PM', '07:37PM', '07:39PM', '07:41PM', '07:44PM', '07:47PM', '07:50PM'],
+      ['08:45PM', '08:50PM', '-', '-', '08:55PM', '-', '-'],
+    ]
+  },
+  {
+    "name": "Batter Car Route 2",
+    "places": ['Admin Block', 'Ruby', 'Jasper/Aquamarine', 'Zircon', 'Topaz', 'Pearl/MM1', 'Mega Mess 2', 'LH/Aavin Junction', 'Archi/ Orion Back gate', 'OJAS'],
+    "slots": [
+      ['-', '07:55AM', '08:05AM', '08:08AM', '08:11AM', '08:14AM', '08:16AM', '08:18AM', '08:22AM', '08:25AM', '08:30AM'],
+      ['-', '08:45AM', '08:55AM', '08:58AM', '09:01AM', '09:04AM', '09:06AM', '09:08AM', '09:12AM', '09:15AM', '09:20AM'],
+      ['-', '09:55AM', '10:05AM', '10:08AM', '10:11AM', '10:14AM', '10:16AM', '10:18AM', '10:22AM', '10:25AM', '10:30AM'],
+      ['-', '10:45AM', '10:55AM', '10:58AM', '11:01AM', '11:04AM', '11:06AM', '11:08AM', '11:12AM', '11:15AM', '11:20AM'],
+      ['12:38PM', '-', '12:35PM', '12:32PM', '12:29PM', '12:26PM', '12:24PM', '12:22PM', '12:18PM', '12:13PM', '12:10PM'],
+      ['-', '12:55PM', '01:05PM', '01:08PM', '01:11PM', '01:14PM', '01:16PM', '01:18PM', '01:22PM', '01:25PM', '01:30PM'],
+      ['-', '03:45PM', '03:55PM', '03:58PM', '04:01PM', '04:04PM', '04:06PM', '04:08PM', '04:12PM', '04:15PM', '04:20PM'],
+      ['05:10PM', '-', '05:13PM', '-', '05:16PM', '05:19PM', '05:22PM', '05:25PM', '05:28PM', '-', '-'],
+      ['05:46PM', '-', '05:49PM', '-', '05:52PM', '05:55PM', '05:58PM', '06:01PM', '06:04PM', '-', '-'],
+      ['06:35PM', '-', '06:38PM', '-', '06:41PM', '06:44PM', '06:47PM', '06:50PM', '06:53PM', '-', '-'],
+      ['07:15PM', '-', '07:18PM', '-', '07:21PM', '07:24PM', '07:27PM', '07:30PM', '07:33PM', '-', '-'],
+      ['07:55PM', '-', '07:58PM', '-', '08:01PM', '08:04PM', '08:07PM', '08:10PM', '08:13PM', '-', '-'],
+    ]
+  },
+  {
+    "name": "Batter Car Route 3",
+    "places": ["Admin Block", "Octagon", "Shopping Center", "Amber", "Sapphire", "Lapis", "Mega Mess 2", "LH/Aavin Junction", "Archi/Orion back gate", "OJAS"],
+    "slots": [
+      ['08:03AM', '-', '-', '08:15AM', '08:17AM', '08:18AM', '08:20AM', '08:22AM', '08:25AM', '08:30AM'],
+      ['08:53AM', '-', '-', '09:05AM', '09:07AM', '09:08AM', '09:10AM', '09:12AM', '09:15AM', '09:20AM'],
+      ['10:03AM', '-', '-', '10:15AM', '10:17AM', '10:18AM', '10:20AM', '10:22AM', '10:25AM', '10:30AM'],
+      ['10:53AM', '-', '-', '11:05AM', '11:07AM', '11:08AM', '11:10AM', '11:12AM', '11:15AM', '11:20AM'],
+      ['-', '12:27PM', '12:24PM', '12:22PM', '12:20PM', '12:17PM', '12:15PM', '12:13PM', '12:10PM', '-'],
+      ['01:03PM', '-', '-', '01:15PM', '01:17PM', '01:18PM', '01:20PM', '01:22PM', '01:25PM', '01:30PM'],
+      ['03:53PM', '-', '-', '04:05PM', '04:07PM', '04:08PM', '04:10PM', '04:12PM', '04:15PM', '04:20PM'],
+      ['-', '05:32PM', '05:29PM', '05:27PM', '05:24PM', '05:22PM', '05:20PM', '05:17PM', '05:15PM', '-'],
+      ['-', '05:46PM', '05:49PM', '05:52PM', '05:55PM', '05:58PM', '06:01PM', '06:04PM', '-', '-'],
+      ['-', '06:35PM', '06:38PM', '06:41PM', '06:44PM', '06:47PM', '06:50PM', '06:53PM', '-', '-'],
+      ['-', '07:15PM', '07:18PM', '07:21PM', '07:24PM', '07:27PM', '07:30PM', '07:33PM', '-', '-'],
+      ['-', '07:55PM', '07:58PM', '08:01PM', '08:04PM', '08:07PM', '08:10PM', '08:13PM', '-', '-'],
+    ]
+  },
+  {
+    "name": "Bus Route 1",
+    "places": ["Kerala mess", "Zircon", "Amber", "MM 1", "Ruby", "MM 2", "Garnet", "Orion Back gate/Archi Dept", "OJAS"],
+    "slots": [
+      ['08:02AM', '08:06AM', '08:08AM', '08:10AM', '08:14AM', '08:18AM', '08:22AM', '08:25AM', '08:28AM'],
+      ['08:52AM', '08:56AM', '08:58AM', '09:00AM', '09:04AM', '09:08AM', '09:12AM', '09:15AM', '09:18AM'],
+      ['10:02AM', '10:06AM', '10:08AM', '10:10AM', '10:14AM', '10:18AM', '10:22AM', '10:25AM', '10:28AM'],
+      ['12:33AM', '12:29AM', '12:27AM', '12:25AM', '12:21AM', '12:17AM', '12:13AM', '12:10AM', '-'],
+      ['01:02PM', '01:06PM', '01:08PM', '01:10PM', '01:14PM', '01:18PM', '01:22PM', '01:25PM', '01:28PM'],
+    ],
+  },
+  {
+    "name": "Bus Route 2",
+    "places": ["Opal", "Beryl", "Food Court", "Orion Back gate/Archi Dept", "Ojas"],
+    "slots": [
+      ['08:14AM', '08:18AM', '08:22AM', '08:25AM', '08:28AM'],
+      ['09:04AM', '09:08AM', '09:12AM', '09:15AM', '09:18AM'],
+      ['10:14AM', '10:18AM', '10:22AM', '10:25AM', '10:28AM'],
+      ['12:21AM', '12:17AM', '12:13AM', '12:10AM', '-'],
+      ['01:14PM', '01:18PM', '01:22PM', '01:25PM', '01:28PM'],
+    ]
+  }
+];
+
+function to24Hour(t) {
+  if (t.indexOf("PM") != -1) {
+    var x = String(parseInt(t.substr(0,2)) + 12);
+    t = x + t.substr(2)
+  }
+  return t.substr(0,5) + ":00+0530";
+};
+
+function getDate(t) {
+  var ct = new Date();
+  var today = ct.getFullYear() + "-" + (ct.getMonth()+1) + "-" + (ct.getDate());
+
+  return new Date(today + "T" + to24Hour(t));
+}
+
+function renderNextTripRoute(route) {
+  var ct = new Date();
+  var theSlot = [];
+  var nextSlotStart = "";
+  var nextSlot = [];
+  for (var slot of route.slots) {
+    var slotStartIdx = 0;
+    while(slot[slotStartIdx] == "-") slotStartIdx++;
+    var slotEndIdx = slot.length - 1;
+    while(slot[slotEndIdx] == "-") slotEndIdx--;
+    var start = getDate(slot[slotStartIdx]), end = getDate(slot[slotEndIdx]);
+    if (start >= ct)
+      if (nextSlotStart == "") {
+        nextSlotStart = start;
+	nextSlot = slot;
+      }
+      else if(nextSlotStart > start) {
+        nextSlotStart = start;
+	nextSlot = slot;
+      }
+
+    if (ct >= start && ct <= end) { theSlot = slot; break; }
+  }
+
+  if (theSlot.length == 0) {
+    if(!nextSlotStart)
+      return "";
+    theSlot = nextSlot;
+  }
+  
+  var ret = `<table><tr><th colspan='2'>${route.name}</th></tr>`;
+  var isFirstUnvisited = true;
+  for (var i = 0; i < route.places.length; i++) {
+    if (theSlot[i] == '-')
+      continue;
+    if (theSlot[i] > ct)
+      ret += `<tr class='visited'><td>${route.places[i]}</td><td>${theSlot[i]}</td></tr>`;
+    else {
+      if (isFirstUnvisited) className = 'first-unvisited';
+      else className = 'unvisited';
+      isFirstUnvisited = false;
+      ret += `<tr class='${className}'><td>${route.places[i]}</td><td>${theSlot[i]}</td></tr>`;
+    }
+  }
+
+  ret += "</table><br>";
+  return ret;
+}
+
+function renderAllTripsRoute(route) {
+  return "this should show all trips"; 
+};
+
+var renderer = renderNextTripRoute;
+
+function render() {
+  var d = document.getElementById("container");
+  d.innerHTML = "";
+  for (var route of routes) {
+    d.innerHTML += renderer(route);
+  }
+}
+
+render();
+setInterval(render, 4000);
+</script>
+</body>
+</html>
