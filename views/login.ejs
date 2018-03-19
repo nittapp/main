@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title></title>
+    <title>NITT App | Login</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -42,7 +42,7 @@
             <% if (locals.message) { %>
                 <div class="alert alert-danger"><%= message%></div>
             <% } %>
-			<button class="btn btn-primary" type="submit">Login</button>
+		<button class="btn btn-primary" type="submit" onclick="document.getElementById('loader').style.display='inline-block'"><i id="loader" style="display: none" class="fa fa-circle-o-notch fa-spin"></i> Login</button>
 		</div>
 	</form>
     </div>

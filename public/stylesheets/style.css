@@ -54,11 +54,20 @@ a {
   margin-top: 5px;
 }
 
-// Extra small devices (portrait phones, less than 576px)
-@media screen and (max-width: 576px) { 
+@media (max-width: 576px) { 
   .card {
-    width: 41.667% !important;
+    margin: 0px !important;
   }
+  .view.overlay .material-icons {
+    font-size: 100px;
+  }
+  body {
+    padding: 0px;
+  }
+  #main_card_container {
+    margin-top: 0px !important;
+  }
+  .card-title { font-size: 18px; }
 }
 
 #my_iframe_container {

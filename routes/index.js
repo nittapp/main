@@ -26,12 +26,12 @@ router.post('/login', function(req, res, next) {
       req.session.name = success.name.trim();
       req.session.username = username;
       isAdmin(username).then(function(isAdmin) {
-        req.session.isAdmin = true;
+        req.session.isAdmin = isAdmin;
         console.log("redirecting to /");
         res.redirect("/");
       }).catch(function(err) {
         console.log("error while checking isAdmin", err);
-        req.session.isAdmin = true;
+        req.session.isAdmin = false;
         res.redirect("/");
       });
     }
@@ -46,13 +46,36 @@ router.get('/navboard', function(req, res, next) {
 });
 
 // see if the request should go to any of the containers
-var proxy = require('http-proxy').createProxyServer({});
+var proxy = require('http-proxy').createProxyServer({changeOrigin: true, autoRewrite: true, protocolRewrite: "http"});
 proxy.on('proxyReq', function(proxyReq, req, res, options) {
+  // overwrite headers
+  console.log("req for", req.path, req.__container__, req.session);
+  var oldSetHeader = res.setHeader.bind(res);
+  res.setHeader = function(name, value) {
+    if (name.toLowerCase() != "x-frame-options")
+      oldSetHeader(name, value);
+  };
+  proxyReq.setHeader('X-NITT-APP-USERNAME', req.session.username);
+  proxyReq.setHeader('X-NITT-APP-NAME', req.session.name);
+  proxyReq.setHeader('X-NITT-APP-IS-ADMIN', req.session.isAdmin.toString());
   proxyReq.setHeader('X_NITT_APP_USERNAME', req.session.username);
   proxyReq.setHeader('X_NITT_APP_NAME', req.session.name);
   proxyReq.setHeader('X_NITT_APP_IS_ADMIN', req.session.isAdmin.toString());
+  /* header_name : X-NITT-APP-MESS-SECRET-KEY 
+value  : bI88z6l6oATWU04qBQt7FR45v6Fs208S */
+  proxyReq.setHeader('X-NITT-APP-MESS-SECRET-KEY', "bI88z6l6oATWU04qBQt7FR45v6Fs208S"); 
+  proxyReq.setHeader('X_NITT_APP_MESS_SECRET_KEY', "bI88z6l6oATWU04qBQt7FR45v6Fs208S"); 
 });
-router.use(function(req, res, next) {
+proxy.on('proxyRes', function(_,_,proxyRes) {
+  proxyRes.on('data', (c) => { console.log(c.toString()); });
+});
+proxy.on('error', function(e, req, res) {
+  console.log(e);
+  res.send(500);
+  res.end("Unable to access this service right now");
+});
+var proxyHandler = function(req, res, next) {
+  console.log(req.path, req.__container__, req.session);
   for (var port in config.ports) {
     var container = config.ports[port];
     if (req.__container__ == container) {
@@ -62,6 +85,19 @@ router.use(function(req, res, next) {
     }
   }
   next();
+};
+
+router.get('/downloads/:file', function(req, res) {
+  var file = __dirname + "/../downloads/" + req.params.file;
+  res.download(file);
+});
+
+router.get('/transport_schedule', function(req, res) {
+  res.render('transport_schedule');
+});
+
+router.get('/contacts', function(req, res) {
+  res.render('contacts');
 });
 
 router.get('/logout', function(req, res) {
@@ -74,4 +110,5 @@ router.get('/', function(req, res, next) {
 });
 
 
-module.exports = router;
+module.exports.router = router;
+module.exports.proxyHandler = proxyHandler;

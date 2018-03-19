@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title></title>
+    <title>NITT App</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
  
@@ -17,12 +17,14 @@
   </head>
   <body>
   <div class="page-header">
-	NITT App
+	<a style="float: left; color: white; margin-top: -4px" href="/navboard" target="my_iframe"><i class="material-icons">home</i></a>
+        <i id="loader" class="fa fa-circle-o-notch fa-spin"></i>
+	<span class='title'>NITT App</span>
     <a href="/logout" style="float: right; font-weight: bold; margin-top: -5px; color: white; padding-right: 5px"><i class="material-icons">power_settings_new</i></a>
   </div>
 
   <div id="my_iframe_container">
-      <iframe src="/navboard" id="my_iframe"></iframe>
+      <iframe src="/navboard" id="my_iframe" name="my_iframe"></iframe>
   </div>
 </div>
 	<!-- Material form login -->
@@ -39,10 +41,10 @@
 
     <script type="text/javascript">
         var reverse_ports_map = {
-            "/events": 2000,
-            "/complaints": 3000, 
-            "/mess": 4000,
-            "/notifications": 5000,
+            2005: "/events",
+            3000: "/complaints",
+            4000: "/mess",
+            5000: "/notifications",
         }
 
         var currentUrl = "//" + location.host + "/navboard";
@@ -51,27 +53,41 @@
             if (pathname == "/navboard") pathname = "/";
             history.pushState({
                 prevSrc: currentUrl,
+                prevTitle: document.title,
               },
-              title + " | NITT App",
+              title,
               pathname
            );
+           document.title = title;
            currentUrl = url;
+           if (url.indexOf(":2005") != -1) $(".page-header .title").text("NITT App | Events"); 
+           else if (url.indexOf(":3000") != -1) $(".page-header .title").text("NITT App | Complaints"); 
+           else if (url.indexOf(":4000") != -1) $(".page-header .title").text("NITT App | Mess"); 
+           else if (url.indexOf(":5000") != -1) $(".page-header .title").text("NITT App | Notifications"); 
+           else $(".page-header .title").text("NITT App");
+
+           $("#loader").hide();
         }
 
         window.onmessage = function(msg) {
             console.log(msg.data, arguments);
             try {
+              if (msg.data.leaving) { $("#loader").show(); return; }
               var iframeLoc = msg.data.loaded;
-              goto(iframeLoc, iframeLoc);
+              var title = msg.data.title;
+              goto(iframeLoc, title);
             } catch(e) {
-              alert("error!"); console.log(e);
+              console.error(e);
             }
         };
 
-        window.onpopstate = function(prevState) {
-            alert("hi");
-            goto(prevState.prevSrc, "NITT App");
+        window.onpopstate = function(event) {
+            var prevState = event.state;
+            goto(prevState.prevSrc, prevState.prevTitle);
+            $("#my_iframe").attr("src", prevState.prevSrc);
+            $("#loader").show();
         };
+
     </script>
   </body>
 </html>

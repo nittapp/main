@@ -12,6 +12,7 @@ const isAdmin = function(username) {
       if (user === null) {
         return resolve(false);
       }
+console.log(user);
       resolve(user.isAdmin);
     }).catch(function(err) {
       reject(err);

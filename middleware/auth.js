@@ -2,7 +2,7 @@ var fs = require('fs');
 var https = require('https');
 
 var ensureLoggedIn = function(req, res, next) {
-  if (!req.session.isLoggedIn) {
+  if (!req.session.isLoggedIn || !req.session.username) {
     return res.redirect("/login");
   }
   next();

