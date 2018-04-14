@@ -138,7 +138,9 @@ function renderNextTripRoute(route) {
   var theSlot = [];
   var nextSlotStart = "";
   var nextSlot = [];
+  theSlot = route.slots[0];
   for (var slot of route.slots) {
+   break;
     var slotStartIdx = 0;
     while(slot[slotStartIdx] == "-") slotStartIdx++;
     var slotEndIdx = slot.length - 1;
@@ -154,12 +156,12 @@ function renderNextTripRoute(route) {
 	nextSlot = slot;
       }
 
-    if (ct >= start && ct <= end) { theSlot = slot; break; }
+    //if (ct >= start && ct <= end) { theSlot = slot; break; }
   }
 
   if (theSlot.length == 0) {
     if(!nextSlotStart)
-      return "";
+    //  return "";
     theSlot = nextSlot;
   }
   

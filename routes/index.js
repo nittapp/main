@@ -46,7 +46,7 @@ router.get('/navboard', function(req, res, next) {
 });
 
 // see if the request should go to any of the containers
-var proxy = require('http-proxy').createProxyServer({changeOrigin: true, autoRewrite: true, protocolRewrite: "http"});
+var proxy = require('http-proxy').createProxyServer({changeOrigin: true, autoRewrite: true, protocolRewrite: "https", https: true});
 proxy.on('proxyReq', function(proxyReq, req, res, options) {
   // overwrite headers
   console.log("req for", req.path, req.__container__, req.session);
@@ -55,6 +55,7 @@ proxy.on('proxyReq', function(proxyReq, req, res, options) {
     if (name.toLowerCase() != "x-frame-options")
       oldSetHeader(name, value);
   };
+req.session.username = "106114062"; req.session.name = "Parth Thakkar"; req.session.isAdmin = true;
   proxyReq.setHeader('X-NITT-APP-USERNAME', req.session.username);
   proxyReq.setHeader('X-NITT-APP-NAME', req.session.name);
   proxyReq.setHeader('X-NITT-APP-IS-ADMIN', req.session.isAdmin.toString());

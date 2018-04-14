@@ -38,7 +38,7 @@ var selects = [];
 var bodyselect = {};
 bodyselect.query = 'body';
 bodyselect.func = function(node) {
-  var hack = "<script type='text/javascript' src='//159.89.163.124:8000/javascripts/iframe_hack.js'></script>";
+  var hack = "<script type='text/javascript' src='//app.nitt.edu/javascripts/iframe_hack.js'></script>";
   var rs = node.createReadStream();
   var ws = node.createWriteStream({outer: false});
 
